@@ -1,4 +1,13 @@
-import { Module } from '@nestjs/common';
+import { Module,NestModule,MiddlewareConsumer,RequestMethod } from '@nestjs/common';
+import { AuthModule } from 'src/auth/auth.module';
 
-@Module({})
-export class UserModule {}
+@Module({
+    imports:[AuthModule]
+})
+export class UserModule implements NestModule{
+    configure(consumer: MiddlewareConsumer) {
+        consumer
+          .apply()
+          .forRoutes();
+      }
+}

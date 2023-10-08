@@ -9,9 +9,9 @@ export class AuthSignUp{
     @ApiProperty()
     password:string;
     @ApiProperty()
-    birthday?:Date;
+    phone:string;
     @ApiProperty()
-    role?:number;
+    birthday?:Date;
     @ApiProperty()
     gender:boolean;
 }

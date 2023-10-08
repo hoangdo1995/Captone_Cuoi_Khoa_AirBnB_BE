@@ -1,15 +1,16 @@
-import { Body, Injectable } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Injectable,NestMiddleware } from '@nestjs/common';
+import { Request, Response,NextFunction } from 'express';
 import { AuthSignUp } from './entities/AuthSignUp.entity';
 import { models } from 'config/config';
 import { errorCode, failCode, successCode } from 'config/responese';
 import * as bcrypt from 'bcrypt';
 import { AuthLogin } from './entities/AuthLogin.entity';
-import { channel } from 'diagnostics_channel';
+import { JwtService } from '@nestjs/jwt';
 
 
 @Injectable()
 export class AuthService {
+    constructor(private jwtService:JwtService){}
     async signUp(res:Response,dataSignup:AuthSignUp){
         try {
             const {email,password,full_name,gender} = dataSignup;
@@ -40,17 +41,18 @@ export class AuthService {
             if(checkEmail){
                 //nếu email đúng
                 //kiểm tra mật khẩu
-                const checkPass = await bcrypt.compare(checkEmail.password,password);
-                console.log(checkPass);
-                
-                if(checkPass){
-                    //nếu mật khẩu đúng
-                    return successCode(res,{email},'Đăng nhập thành công!');
-                }
-                else{
-                    // nếu mật khẩu sai 
-                    return failCode(res,{email},401,'Sai mật khẩu')
-                }
+                bcrypt.compare(password,checkEmail.password,(err,result)=>{
+                    if(result){
+                        //nếu mật khẩu đúng
+                        //tạo token
+                        const token = this.jwtService.sign({email});
+                        return successCode(res,{email,token},'Đăng nhập thành công!');
+                    }
+                    else{
+                        // nếu mật khẩu sai 
+                        return failCode(res,{email},401,'Sai mật khẩu')
+                    }
+                });
             }
             else{
                 //nếu email sai
@@ -61,5 +63,4 @@ export class AuthService {
             return errorCode(res,`Đã xãy ra lỗi!${error}`);
         }
     }
-
 }

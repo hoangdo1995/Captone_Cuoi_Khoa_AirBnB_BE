@@ -14,4 +14,7 @@ export class AuthSignUp{
     birthday?:Date;
     @ApiProperty()
     gender:boolean;
+    @ApiProperty()
+    role:number
+
 }

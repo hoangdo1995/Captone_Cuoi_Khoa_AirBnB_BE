@@ -15,7 +15,6 @@ import { CurrentUser } from 'src/helps/util.decorator';
 export class UserController {
     constructor(private userService:UserService){}
 
-
     @Put('update')
     @UseGuards(AuthGuard)
     @ApiHeader({name:'token',description:'token login'})

@@ -55,15 +55,14 @@ export class UserService {
 
     async changeRole(req:Request,res:Response){
         try {
-            const {role} = req.body;
-            const id = await getUserIdlByToken(req.headers?.token.toString());
+            const {role,user_id} = req.body;
             
             await models.user.update({
-                where:id,
+                where:{id:user_id},
                 data:{role:+role}
             })
 
-            return successCode(res,{role},'Thay đổi role thành công!');
+            return successCode(res,{role,id:user_id},'Thay đổi role thành công!');
         } catch (error) {
             return errorCode(res,`Đã có lỗi! ${error}`)
         }

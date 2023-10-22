@@ -18,7 +18,9 @@ export class UpdateUser {
 
 export class RoleData{
     @ApiProperty()
-    role:Number
+    role:Number;
+    @ApiProperty()
+    user_id:number
 }
 
 export class UserId{

@@ -9,25 +9,30 @@ datasource db {
 
 model comment {
   id           Int      @id @default(autoincrement())
-  user_id      Int?
+  user_id      Int
   date         DateTime @db.Date
   content      String?  @db.VarChar(250)
-  rate_comment Int?     @db.TinyInt
-  room_id      Int?
-  user         user?    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "comment_ibfk_1")
-  room         room?    @relation(fields: [room_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "comment_ibfk_2")
+  rate_comment Int      @db.TinyInt
+  room_id      Int
+  user         user     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "comment_ibfk_1")
+  room         room     @relation(fields: [room_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "comment_ibfk_2")
 
   @@index([room_id], map: "room_id")
   @@index([user_id], map: "user_id")
 }
 
 model location {
-  id            Int    @id @default(autoincrement())
-  location_name String @db.VarChar(200)
-  province      String @db.VarChar(100)
-  country       String @db.VarChar(100)
-  image         String @db.VarChar(400)
-  room          room[]
+  id                                   Int      @id @default(autoincrement())
+  location_name                        String   @db.VarChar(200)
+  province                             Int
+  country                              Int      @db.MediumInt
+  image                                String   @db.VarChar(400)
+  province_location_provinceToprovince province @relation("location_provinceToprovince", fields: [province], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "location_ibfk_1")
+  country_location_countryTocountry    country  @relation("location_countryTocountry", fields: [country], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "location_ibfk_2")
+  room                                 room[]
+
+  @@index([country], map: "country")
+  @@index([province], map: "province")
 }
 
 model role {
@@ -40,10 +45,10 @@ model role {
 model room {
   id              Int         @id @default(autoincrement())
   room_name       String      @db.VarChar(200)
-  living_room     Int?
-  bedroom         Int?
-  bed             Int?
-  bathroom        Int?
+  living_room     Int?        @db.TinyInt
+  bedroom         Int?        @db.TinyInt
+  bed             Int?        @db.TinyInt
+  bathroom        Int?        @db.TinyInt
   description     String?     @db.VarChar(1000)
   cost            Float       @db.Float
   washing_machine Boolean?
@@ -82,7 +87,7 @@ model room_book {
 model user {
   id                   Int         @id @default(autoincrement())
   full_name            String      @db.VarChar(200)
-  email                String      @db.VarChar(200) @unique
+  email                String      @db.VarChar(200)
   password             String      @db.VarChar(500)
   birth_day            DateTime?   @db.Date
   phone                String?     @db.VarChar(15)
@@ -95,4 +100,16 @@ model user {
   role_user_roleTorole role?       @relation("user_roleTorole", fields: [role], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_ibfk_1")
 
   @@index([role], map: "role")
+}
+
+model country {
+  id                                 Int        @id @default(autoincrement()) @db.MediumInt
+  country_name                       String     @db.VarChar(200)
+  location_location_countryTocountry location[] @relation("location_countryTocountry")
+}
+
+model province {
+  id                                   Int        @id @default(autoincrement())
+  province_name                        String     @db.VarChar(200)
+  location_location_provinceToprovince location[] @relation("location_provinceToprovince")
 }

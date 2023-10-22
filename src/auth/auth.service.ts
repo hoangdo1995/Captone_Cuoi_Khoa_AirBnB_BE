@@ -13,7 +13,11 @@ export class AuthService {
     constructor(private jwtService:JwtService){}
     async signUp(res:Response,dataSignup:AuthSignUp){
         try {
-            const {email,password,full_name,gender} = dataSignup;
+            const {email,password,full_name,gender,role} = dataSignup;
+            //chăn người dùng thêm quyền admin
+            if(role===1){
+                return failCode(res,{},403,`Yêu cầu quyền admin để thực hiện`);
+            }
             //kiểm tra email
             const checkEmail = await models.user.findFirst({where:{email}})
             //nêu email tồn tại
@@ -24,7 +28,7 @@ export class AuthService {
                 //nếu email chưa tồn tại
                 //mã hóa password'
                 const bcryptPass:string = await bcrypt.hash(password,10);
-                await models.user.create({data:{email,full_name,password:bcryptPass,gender}})
+                await models.user.create({data:{email,full_name,password:bcryptPass,gender,role}})
                 return successCode(res,{email},'Tạo tài khoản thành công!');
             }
 

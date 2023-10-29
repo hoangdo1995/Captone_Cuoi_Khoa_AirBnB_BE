@@ -1,0 +1,32 @@
+version: '3'
+# build image, khai báo container
+services:
+  mysql_db_airbnb:
+    image: mysql
+    # build:
+    container_name: mysql_db_airbnb
+    environment:
+      - MYSQL_ROOT_PASSWORD=1234
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql_db:/var/lib/mysql
+    networks:
+      - node-network
+  airbnb:
+    depends_on:
+      - mysql_db_airbnb
+    build: .
+    container_name: airbnb_be_con_compose
+    environment:
+      - DATABASE_URL=mysql://root:1234@mysql_db_airbnb:3306/db_airbnb?schema=public
+    ports:
+      - 8080:8080
+    networks:
+      - node-network
+    restart: always
+volumes:
+  mysql_db:
+    driver: local
+networks:
+  node-network:

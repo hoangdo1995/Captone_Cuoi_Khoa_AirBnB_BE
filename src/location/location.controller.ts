@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Header, Param, Post, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { LocationService } from './location.service';
 import { ApiBody, ApiHeader, ApiHeaders, ApiTags } from '@nestjs/swagger';
@@ -12,6 +12,8 @@ export class LocationController {
     constructor(private locationService:LocationService){}
 
     @Get('')
+    @Header('Cache-Control', 'none')
+    @Header('Access-Control-Allow-Origin', 'http://localhost:3000')
     async getAllLocation(@Res() res:Response){
         return this.locationService.getAllLocation(res);
     }

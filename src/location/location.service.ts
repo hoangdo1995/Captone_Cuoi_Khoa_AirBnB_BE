@@ -9,8 +9,22 @@ export class LocationService {
 
     async getAllLocation(res:Response){
         try {
-            const data = await models.location.findMany();
-            return successCode(res,data,'Đã tải thành công danh sách Location!');  
+            const data = await models.location.findMany({
+                include:{
+                    province_location_provinceToprovince:true,
+                    country_location_countryTocountry:true
+                }
+            });
+            const result = data.map((item:any)=>{
+                return {
+                    id:item?.id,
+                    province:item.province_location_provinceToprovince.province_name,
+                    country:item.country_location_countryTocountry.country_name,
+                    district:item.location_name,
+                    image:item.image 
+                }
+            },[]);
+            return successCode(res,result,'Đã tải thành công danh sách Location!');  
         } catch (error) {
             return errorCode(res,`Đã có lỗi! ${error}`)
         }

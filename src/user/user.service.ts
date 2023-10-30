@@ -68,14 +68,25 @@ export class UserService {
         }
     }
 
-    async removeUser(req:Request,res:Response){
+    async removeUser(req:Request,res:Response,user_id:number){
         try {
-            const id = await getUserIdlByToken(req.headers?.token.toString());
-            if(id){
+            console.log(typeof(user_id));
+            
+            //kiểm tra tồn tai của user
+            const checkUser = await models.user.findFirst({where:{id:+user_id},select:{id:true}});
+            
+            if(checkUser){
+                //xóa hết các thông tin người dùng trên data
+                await models.comment.deleteMany({where:{user_id:+user_id}});
+                await models.room_book.deleteMany({where:{user_id:+user_id}});
+                await models.room.deleteMany({where:{user_id:+user_id}})
                 await models.user.delete({
-                    where:id
+                    where:{id:+user_id}
                 })
                 return successCode(res,{},'Xóa người dùng thành công!')
+            }
+            else{
+                failCode(res,{user_id},401,'User không tồn tại!');
             }
         } catch (error) {
             return errorCode(res,`Đã có lỗi! ${error}`)

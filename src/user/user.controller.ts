@@ -1,4 +1,4 @@
-import { Controller,Post,UploadedFile,UseInterceptors,Res,Req, Put,Delete, UseGuards} from '@nestjs/common';
+import { Controller,Post,UploadedFile,UseInterceptors,Res,Req, Put,Delete, UseGuards, Param} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, ApiHeader, ApiTags } from '@nestjs/swagger';
 import {Express, Response, Request} from 'express'
@@ -53,14 +53,12 @@ export class UserController {
         return this.userService.changeRole(req,res);
     }
 
-    @Delete('delete-user')
-    @UseGuards(new RolesGuard(['user']))
+    @Delete('delete-user/:user_id')
+    @UseGuards(new RolesGuard(['admin']))
     @UseGuards(AuthGuard)
     @ApiHeader({name:"token",description:'Token login'})
-    @ApiHeader({name:"role",description:'user role'})
-    @ApiBody({type:UserId})
-    async removeUser(@Req() req:Request,@Res() res:Response){
-        return this.userService.removeUser(req,res);
+    async removeUser(@Req() req:Request,@Res() res:Response,@Param('user_id') user_id:number){
+        return this.userService.removeUser(req,res,user_id);
     }
 
 }

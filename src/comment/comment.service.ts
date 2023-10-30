@@ -8,6 +8,30 @@ import { DeleteComment } from './entities/deleteComment.entity';
 
 @Injectable()
 export class CommentService {
+
+    async getCommentByRoom(res:Response, roomId:number){
+        try {
+            //kiểm tra tồn tại của roomId
+            const checkRoomId = await models.room.findFirst({
+                where:{id:+roomId}
+            })
+            //nếu room tồn tại
+            if(checkRoomId){
+                const data = await models.comment.findMany({
+                    where:{room_id:+roomId}
+                });
+                successCode(res,data,'Lấy danh sách comment của phòng thành công!');
+            }
+            else{
+                //nếu room không tồn tại!
+                failCode(res,{roomId},401,'Room không tồn tại!');
+            }
+        } catch (error) {
+            return errorCode(res,`Đã có lỗi! ${error}`);
+        }
+    }
+
+
     async createComment(res:Response, commentInfo:Comment){
         try {
             //lấy thông tin comment

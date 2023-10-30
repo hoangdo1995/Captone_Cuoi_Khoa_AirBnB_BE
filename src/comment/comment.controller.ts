@@ -1,4 +1,4 @@
-import { Controller,Post, Res, Body, UseGuards, Delete, Param, Req } from '@nestjs/common';
+import { Controller,Post, Res, Body, UseGuards, Delete, Param, Req, Get } from '@nestjs/common';
 import { Response } from 'express';
 import { Comment } from './entities/comment.entity';
 import { ApiHeader, ApiParam, ApiTags } from '@nestjs/swagger';
@@ -6,11 +6,17 @@ import { AuthGuard } from 'src/guards/auth.guard';
 import { RolesGuard } from 'src/guards/role.guard';
 import { CommentService } from './comment.service';
 import { DeleteComment } from './entities/deleteComment.entity';
+import { async } from 'rxjs';
 
 @ApiTags('comment')
 @Controller('comment')
 export class CommentController {
     constructor(private commentService:CommentService){}
+
+    @Get(':roomId')
+    async getCommentRoom(@Res() res:Response, @Param('roomId') roomId:number){
+        return this.commentService.getCommentByRoom(res,roomId);
+    }
 
 
     @Post('create')

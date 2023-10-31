@@ -11,26 +11,26 @@ export class RoomDto{
 	bed?:number;
     @ApiProperty()
 	bathroom?:number;
-    @ApiProperty()
+    @ApiProperty({default:''})
 	description?:string;
-    @ApiProperty()
+    @ApiProperty({default:0,required:false})
 	cost:number;
-    @ApiProperty()
+    @ApiProperty({default:false,required:false})
 	washing_machine?:boolean;
-    @ApiProperty()
+    @ApiProperty({default:false,required:false})
 	iron?:boolean;
-    @ApiProperty()
-	televition?:boolean;
-    @ApiProperty()
+    @ApiProperty({default:false,required:false})
+	televition:boolean;
+    @ApiProperty({default:false,required:false})
 	air_condition?:boolean;
-    @ApiProperty()
+    @ApiProperty({default:true,required:false})
 	wifi?:boolean;
-    @ApiProperty()
+    @ApiProperty({default:true,required:false})
 	parking?:boolean;
-    @ApiProperty()
+    @ApiProperty({default:false,required:false})
 	kitchen?:boolean;
-    @ApiProperty()
-	image?:string;
+    @ApiProperty({type:"string",format:'binary'})
+	image?:Express.Multer.File;
     @ApiProperty()
 	location_id:number;
 }

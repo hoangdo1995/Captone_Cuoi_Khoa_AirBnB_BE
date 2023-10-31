@@ -13,7 +13,10 @@ export class RoomService {
     async getAllRoom(res:Response){
         try {
             const data = await models.room.findMany();
-            return successCode(res,data,'Lấy tất cả room thành công!');
+            const result = data.map(room=>{
+                return {...room,image:process.cwd()+'/public/img/'+room.image}
+            })
+            return successCode(res,result,'Lấy tất cả room thành công!');
         } catch (error) {
             return errorCode(res,`Đã xảy ra lỗi! ${error}`);
         }
@@ -77,7 +80,7 @@ export class RoomService {
         }
     }
 
-    async createRoom(res:Response,req:Request,roomInfo:RoomDto){
+    async createRoom(file:Express.Multer.File,res:Response,req:Request,roomInfo:RoomDto){
         try {
             //lấy thông tin room
             const {room_name,living_room,bedroom,bed,bathroom, description,cost,washing_machine,iron,televition,air_condition,wifi,parking,kitchen,image,location_id} = roomInfo;
@@ -98,7 +101,7 @@ export class RoomService {
                 const userCreate = await models.user.findFirst({where:{id:+userId.id}});
                 if(userCreate){
                     //nếu tồn tại
-                    await models.room.create({data:{room_name,living_room:+living_room,bedroom:+bedroom,bed:+bed,bathroom:+bathroom, description,cost:+cost,washing_machine,iron,televition,air_condition,wifi,parking,kitchen,image,location_id:+location_id,user_id:userCreate.id}});
+                    await models.room.create({data:{room_name,living_room:+living_room,bedroom:+bedroom,bed:+bed,bathroom:+bathroom, description,cost:+cost,washing_machine:!!washing_machine,iron:!!iron,televition:!!televition,air_condition:!!air_condition,wifi:!!wifi,parking:!!parking,kitchen:!!kitchen,location_id:+location_id,user_id:userCreate.id,image:file.filename}});
                     return successCode(res,{room_name,location_id},'Tạo phòng cho thuê thành công');
                 }
                 else{
@@ -111,6 +114,8 @@ export class RoomService {
                 return failCode(res,{},401,'location không tồn tại!')
             }
         } catch (error) {
+            console.log(error);
+            
             return errorCode(res,`Đã xảy ra lỗi! ${error}`)
         }
     }

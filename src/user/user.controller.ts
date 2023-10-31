@@ -1,7 +1,7 @@
-import { Controller,Post,UploadedFile,UseInterceptors,Res,Req, Put,Delete, UseGuards, Param} from '@nestjs/common';
+import { Controller,Post,UploadedFile,UseInterceptors,Res,Req, Put,Delete, UseGuards, Param, Get} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, ApiHeader, ApiTags } from '@nestjs/swagger';
-import {Express, Response, Request} from 'express'
+import {Express, Response, Request, response} from 'express'
 import { AvatarUpload, RoleData, UpdateUser, UserId } from './entities/user.entity';
 import { diskStorage } from 'multer';
 import { formatFileName} from 'config/config';
@@ -14,6 +14,27 @@ import { CurrentUser } from 'src/helps/util.decorator';
 @Controller('user')
 export class UserController {
     constructor(private userService:UserService){}
+
+    @Get('/all-user')
+    @UseGuards(new RolesGuard(['admin']))
+    @UseGuards(AuthGuard)
+    @ApiHeader({name:'token',description:'token login'})
+    async getAllUser(@Res() res:Response){
+        return this.userService.getAllUser(res)
+    }
+
+    @Get('/all-user-by-role/:role')
+    @UseGuards(new RolesGuard(['admin']))
+    @UseGuards(AuthGuard)
+    @ApiHeader({name:'token',description:'token login'})
+    async getAllUserByRole(@Res() res:Response,@Param('role') role:number){
+        return this.userService.getAllUserByRole(res,role)
+    }
+
+    @Get(':user_id')
+    async getUserInfor(@Res() res:Response, @Param('user_id') user_id:number){
+        return this.userService.getUserInfor(res,user_id);
+    }
 
     @Put('update')
     @UseGuards(AuthGuard)

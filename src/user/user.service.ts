@@ -6,6 +6,53 @@ import { formatFileName, getUserIdlByToken, models } from 'config/config';
 @Injectable()
 export class UserService {
     constructor(){}
+
+    async getAllUser(res:Response){
+        try {
+            const data = await models.user.findMany();
+            const result = data.map((user)=>{
+                const {password, ...withoutPass} = user;
+                if(withoutPass.avatar)withoutPass.avatar = process.cwd()+'/public/img/'+withoutPass.avatar;
+                return withoutPass;
+            })
+            return successCode(res,result,'lấy danh sách user thành công!');
+        } catch (error) {
+            return errorCode(res,`Đã xảy ra lỗi! ${error}`)
+        }
+    }
+    
+    async getAllUserByRole(res:Response,role:number){
+        try {
+            const data = await models.user.findMany({where:{role:+role}});
+            const result = data.map((user)=>{
+                const {password, ...withoutPass} = user;
+                if(withoutPass.avatar)withoutPass.avatar = process.cwd()+'/public/img/'+withoutPass.avatar;
+                return withoutPass;
+            })
+            return successCode(res,result,'lấy danh sách user thành công!');
+        } catch (error) {
+            return errorCode(res,`Đã xảy ra lỗi! ${error}`)
+        }
+    }
+
+    async getUserInfor(res:Response,user_id:number){
+        try {
+            // kiểm tra tồn tại của user
+            const checkUser = await models.user.findUnique({where:{id:+user_id},})
+            const {password, ...userWithoutPass} = checkUser;
+            const avatarLink = process.cwd()+'/public/img/'+checkUser.avatar;
+            userWithoutPass.avatar = avatarLink;
+            if(checkUser){
+                //nếu tồn tại
+                return successCode(res,userWithoutPass,'Lấy thông tin user thành công');
+            }else{
+                //nếu không
+                return failCode(res,{user_id},401,'User không tồn tại!')
+            }
+        } catch (error) {
+            return errorCode(res,`Đã xảy ra lỗi! ${error}`)
+        }
+    }
     
     async updateUser(req:Request,res:Response){
         try {

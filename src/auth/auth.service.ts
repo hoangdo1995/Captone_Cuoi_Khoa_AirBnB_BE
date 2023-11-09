@@ -50,7 +50,9 @@ export class AuthService {
                         //nếu mật khẩu đúng
                         //tạo token
                         const token = this.jwtService.sign({email});
-                        return successCode(res,{email,token},'Đăng nhập thành công!');
+                        const {password,...userInfor} = checkEmail;
+                        const data = {...userInfor,token};
+                        return successCode(res,data,'Đăng nhập thành công!');
                     }
                     else{
                         // nếu mật khẩu sai 
@@ -64,7 +66,7 @@ export class AuthService {
             }
             
         } catch (error) {
-            return errorCode(res,`Đã xãy ra lỗi!${error}`);
+            return errorCode(res,`Đã xãy ra lỗi!`);
         }
     }
 }

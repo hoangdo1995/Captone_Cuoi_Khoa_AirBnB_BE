@@ -24,9 +24,22 @@ services:
       - 8080:8080
     networks:
       - node-network
+    volumes:
+      - airbnb_be_db:/app/public
     restart: always
+  web:
+    image: nginx
+    volumes:
+    - airbnb_be_db:/usr/share/nginx/html
+    ports:
+    - 80:80
+    environment:
+    - NGINX_HOST=localhost
+    - NGINX_PORT=80
 volumes:
   mysql_db:
+    driver: local
+  airbnb_be_db:
     driver: local
 networks:
   node-network:
